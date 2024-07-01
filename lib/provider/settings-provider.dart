@@ -1,12 +1,10 @@
 
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
 class SettingsProvider extends ChangeNotifier{
   ThemeMode _currentTheme = ThemeMode.system;
   Locale _locale = Locale('en');
-
 
   Locale get locale => _locale;
   ThemeMode get themeMode => _currentTheme;
@@ -16,7 +14,6 @@ class SettingsProvider extends ChangeNotifier{
     _currentTheme = newTheme;
     notifyListeners();
   }
-
   void setLocale(Locale locale) {
     if (_locale == locale) return;
     _locale = locale;
@@ -44,3 +41,6 @@ class L10n {
     }
   }
 }
+
+
+//View.of(context).platformDispatcher.locale;

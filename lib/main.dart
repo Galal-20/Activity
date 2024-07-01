@@ -1,5 +1,6 @@
 import 'package:activity/provider/settings-provider.dart';
 import 'package:activity/style/my-theme.dart';
+import 'package:activity/ui/auth/AuthWrapper.dart';
 import 'package:activity/ui/auth/forgetPassword/forgetPasswordScreen.dart';
 import 'package:activity/ui/auth/login/login.dart';
 import 'package:activity/ui/auth/sign-up/register.dart';
@@ -43,6 +44,7 @@ class MyApp extends StatelessWidget {
         theme: MyTheme.lightTheme,
         darkTheme: MyTheme.darkTheme,
         themeMode: Provider.of<SettingsProvider>(context).themeMode,
+        home: AuthWrapper(),
         routes: {
           SignUpScreen.routName: (context) => const SignUpScreen(),
           LoginScreen.routName: (context)=> const LoginScreen(),
@@ -50,7 +52,7 @@ class MyApp extends StatelessWidget {
           SplashScreen.routName:(context) => const SplashScreen(),
           ForgetPassword.routName:(context) => const ForgetPassword(),
         },
-        initialRoute: SplashScreen.routName,
+
       );
   }
 }

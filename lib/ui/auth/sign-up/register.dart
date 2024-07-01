@@ -1,8 +1,8 @@
 
+import 'package:activity/ui/auth/store_user_data/model/users.dart';
 import 'package:activity/ui/components/custom-text-form-field.dart';
 import 'package:activity/ui/home/homeScreen.dart';
 import 'package:activity/utils/email-validation.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -10,11 +10,14 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
+
+import '../../../utils/R.dart';
 import '../login/login.dart';
+import '../store_user_data/user_dao.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key,});
-  static const String routName = "Register";
+  static const String routName = "/Register";
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
 }
@@ -24,6 +27,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
+
 
   var formKey= GlobalKey<FormState>();
   bool _isLoading = false;
@@ -48,7 +52,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       borderRadius: BorderRadius.all(Radius.circular(40)),
                       borderSide: BorderSide(
                           width: 3,
-                          color: Colors.green)
+                          color: Colors.green
+                      )
                   ),
                   margin: const EdgeInsets.only(
                     left: 10,
@@ -149,7 +154,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             },
                           ),
                           _isLoading
-                          ? CircularProgressIndicator(color: Colors.green,)
+                          ? const CircularProgressIndicator(color: Colors.green,)
                           :
                           ElevatedButton(
                             onPressed: () {
@@ -223,35 +228,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
 
-
-  bool passwordConfirmed(){
-    if(passwordController.text.trim() == confirmPasswordController.text
-        .trim()){
-      return true;
-    }else{
-      return false;
-    }
-  }
-  Future singUp() async{
+  singUp() async{
     if(!(formKey.currentState!.validate())) return;
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() {_isLoading = true;});
     try {
-      if(passwordConfirmed()){
-        await FirebaseAuth.instance
+        var  userCredential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(
           email: emailController.text.trim(),
           password: passwordController.text.trim(),
         );
-        addUserDetails(
-            fullNameController.text.trim(),
-            userNameController.text.trim(),
-            emailController.text.trim());
-      }
+        Users users = Users(
+            id: userCredential.user?.uid,
+          fullName: fullNameController.text,
+          userName: userNameController.text,
+          email: emailController.text
+        );
+        await UserDao.addUser(users);
 
       Fluttertoast.showToast(
-          msg: AppLocalizations.of(context)!.signUpSuccess,
+          msg: "${AppLocalizations.of(context)!.signUpSuccess} ${users.userName}",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
@@ -261,26 +256,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
       );
       Navigator.pushReplacementNamed(context, HomeScreen.routName);
     }on FirebaseAuthException catch(e){
-      if (e.code == 'weak-password') {
+      if (e.code == R.weakPassword) {
         print('The password provided is too weak.');
-      } else if (e.code == 'email-already-in-use') {
+      } else if (e.code == R.emailAlreadyInUse) {
         print('The account already exists for that email.');
       }
     }catch(e){
       print(e.toString());
     }finally{
-      setState(() {
-        _isLoading = false;
-      });
+      setState(() {_isLoading = false;});
     }
 
   }
 
-  Future addUserDetails(String fullName, String userName, String email)async{
-    await FirebaseFirestore.instance.collection('users').add({
-      'full name': fullName,
-      'user name': userName,
-      'email': email,
-    });
-  }
 }

@@ -1,9 +1,14 @@
 import 'package:activity/provider/settings-provider.dart';
+import 'package:activity/ui/auth/store_user_data/model/users.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import '../../auth/store_user_data/user_dao.dart';
+
 
 class SettingsTab extends StatefulWidget {
   SettingsTab({super.key});
@@ -13,13 +18,10 @@ class SettingsTab extends StatefulWidget {
 }
 
 class _SettingsTabState extends State<SettingsTab> {
-  User user = FirebaseAuth.instance.currentUser!;
 
-
-  List<String> docId = [];
-  //final List<String> languages = ['English', 'Spanish', 'French', 'German'];
   final List<String> modes = ['Light', 'Dark', 'System'];
   String? currentMode;
+  Users? currentUser;
 
   @override
   void didChangeDependencies() {
@@ -32,17 +34,18 @@ class _SettingsTabState extends State<SettingsTab> {
     } else {
       currentMode = 'System';
     }
+    fetchUserData();
+
   }
 
-  Future getDocId() async{
-    await FirebaseFirestore.instance.collection('users').get().then(
-            (snapshot) => snapshot.docs.forEach(
-                (element){
-              print(element.reference);
-              docId.add(element.reference.id);
-            }
-        )
-    );
+  Future<void> fetchUserData() async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId != null) {
+      Users? user = await UserDao.getUsers(userId);
+      setState(() {
+        currentUser = user;
+      });
+    }
   }
 
   @override
@@ -52,33 +55,33 @@ class _SettingsTabState extends State<SettingsTab> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-         /* Text(
+          Text(
             'Account Details',
             style: Theme.of(context).textTheme.titleLarge,
           ),
-          Container(
-            width: double.infinity,
-            height: 100,
-            child: FutureBuilder(
-              future: getDocId(),
-              builder: (context, snapshot){
-                return ListView.builder(
-                  itemBuilder: (context, index){
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ListTile(
-                          title: GetUsersData(docID: docId[index],),
-                          titleTextStyle: Theme.of(context).textTheme.titleSmall,
-                          //textColor: Colors.black,
-                          //tileColor: Colors.red,
-                      ),
-                    );
-                  },
-                  itemCount: docId.length,
-                );
-              },
-            ),
-          ),*/
+          const SizedBox(height: 16.0),
+          currentUser == null
+              ? const CircularProgressIndicator()
+              : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                  '${AppLocalizations.of(context)?.fullName}: ${currentUser?.fullName ?? 'null'}',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8,),
+              Text(
+                  '${AppLocalizations.of(context)?.userName}: ${currentUser?.userName ?? 'null'}',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8,),
+              Text(
+                  '${AppLocalizations.of(context)?.hintEmail}: ${currentUser?.email ?? 'null'}',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8,),
+            ],
+          ),
           const SizedBox(height: 16.0),
           Text(
             AppLocalizations.of(context)?.lang?? '',
@@ -105,7 +108,6 @@ class _SettingsTabState extends State<SettingsTab> {
               }
             },
             decoration: InputDecoration(
-              labelText: AppLocalizations.of(context)!.lang,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(40),
                 borderSide: const BorderSide(width: 2, color: Colors.white)
@@ -161,30 +163,9 @@ class _SettingsTabState extends State<SettingsTab> {
             ),
           ),
           const SizedBox(height: 8,),
-
         ],
       ),
     );
 
   }
 }
-/*FutureBuilder(
-      future: getDocId(),
-      builder: (context, snapshot){
-        return ListView.builder(
-            itemBuilder: (context, index){
-              return ListTile(
-                title: GetUsersData(docID: docId[index],),
-                textColor: Colors.black,
-              );
-            },
-          itemCount: docId.length,
-        );
-      },
-    );
-
-    Text(
-              'Account Details',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
-            ),
-    */

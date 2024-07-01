@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 
 import '../auth/login/login.dart';
@@ -12,7 +13,7 @@ import '../auth/login/login.dart';
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
-  static const String routName = "HomeScreen";
+  static const String routName = "/HomeScreen";
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -99,8 +100,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void signOut() async {
     await FirebaseAuth.instance.signOut();
+    GoogleSignIn googleSignIn = GoogleSignIn();
+    googleSignIn.disconnect();
     Fluttertoast.showToast(
-        msg: "${AppLocalizations.of(context)!.signOutSuccess} ${user.email}",
+        msg: AppLocalizations.of(context)!.signOutSuccess,
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.CENTER,
         timeInSecForIosWeb: 1,

@@ -8,4 +8,8 @@ class R {
   static const String email= "Email";
   static const String resetPassword = "Reset Password";
   static const String login = "Login";
+  static const String weakPassword = "weak-password";
+  static const String wrongPassword = "wrong-password";
+  static const String emailAlreadyInUse = "email-already-in-use";
+  static const String userNotFound = "user-not-found";
 }

@@ -8,7 +8,7 @@ import '../../../utils/R.dart';
 class ForgetPassword extends StatefulWidget {
   const ForgetPassword({super.key});
 
-  static const String routName = "ForgetPassword";
+  static const String routName = "/ForgetPassword";
 
   @override
   State<ForgetPassword> createState() => _ForgetPasswordState();
