@@ -5,13 +5,14 @@ import 'package:activity/ui/home/homeScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../../utils/R.dart';
 import '../../../utils/email-validation.dart';
 import '../../components/custom-text-form-field.dart';
+import '../store_user_data/model/users.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -273,6 +274,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       return userCredential.user;
     } catch (e) {
+      print(e.toString());
       return null;
     }
   }

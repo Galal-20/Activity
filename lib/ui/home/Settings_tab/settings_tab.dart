@@ -1,9 +1,11 @@
 import 'package:activity/provider/settings-provider.dart';
 import 'package:activity/ui/auth/store_user_data/model/users.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../auth/store_user_data/user_dao.dart';
 
